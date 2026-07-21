@@ -10,6 +10,10 @@ from invoice_pad.cli import demo_state
 from invoice_pad.storage import load_state, save_state
 from invoice_pad.models import generate_short_id
 from invoice_pad.validation import normalize_tags, require_text, validate_task_status
+from invoice_pad.services import (
+    create_note,
+    list_notes,
+)
 
 
 class ProjectSmokeTests(unittest.TestCase):
@@ -57,6 +61,14 @@ class ProjectSmokeTests(unittest.TestCase):
         self.assertEqual(validate_task_status("todo"), "todo")
         with self.assertRaises(ValueError):
             require_text(" ", "title")
+
+    def test_create_and_list_notes(self) -> None:
+        state = ProjectState()
+        note = create_note(state, " New note ", "Body", ["Work", "work"])
+
+        self.assertEqual(note.title, "New note")
+        self.assertEqual(note.tags, ["work"])
+        self.assertEqual(list_notes(state), [note])
 
 
 if __name__ == "__main__":
